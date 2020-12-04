@@ -1,22 +1,32 @@
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class Trip {
     private Map map;
-    private int src;
-    private int trg;
     private static final int NO_PARENT = -1;
-    public ArrayList<String> path = new ArrayList<>();
 
-    public Trip(String source, String target) throws IOException {
+
+    public Trip() throws IOException {
         map = new Map();
-        src = map.cities.get(source);
-        trg = map.cities.get(target);
+//        src = map.cities.get(source);
+//        trg = map.cities.get(target);
+
+    }
+
+    public List<String> route(String starting_city, String ending_city, List<String> attractions)
+    {
+        int src = map.cities.get(starting_city);
+        int trg = map.cities.get(ending_city);
+
+        ArrayList<String> path = dijkstra(src, trg);
+
+        return path;
     }
 
 
-    public void dijkstra()
+    private ArrayList<String> dijkstra(int src, int trg)
     {
         int n = map.v;
         int[] fastestroads = new int[n];
@@ -58,34 +68,59 @@ public class Trip {
             }
         }
 
-        findRoute(src, trg, fastestroads, parents);
+        ArrayList<String> path = findRouteSegment(src, trg, fastestroads, parents);
+        return path;
     }
 
-    private void findRoute(int src, int trg, int[] distances, int[] parents)
+
+    private ArrayList<String> findRouteSegment(int src, int trg, int[] distances, int[] parents)
     {
-        findRouteHelper(trg, parents);
+        ArrayList<String> path = new ArrayList<>();
+        path = findRouteSegmentHelper(trg, parents, path);
         path.remove(0);
+        return path;
+
+        int n = distances.length;
+        System.out.print("Vertex\t Distance\tPath");
+
+        for (int vIdx = 0;
+             vIdx < n;
+             vIdx++)
+        {
+            if (vIdx != src)
+            {
+                System.out.print("\n" + src + " -> ");
+                System.out.print(vIdx + " \t\t ");
+                System.out.print(distances[vIdx] + "\t\t");
+                printPath(vIdx, parents);
+            }
+        }
     }
 
 
-    private void findRouteHelper(int trg, int[] parents)
+    private ArrayList<String> findRouteSegmentHelper(int trg, int[] parents, ArrayList<String> path)
     {
         path.add(0,map.findKey(trg));
         if (trg == NO_PARENT)
-            return;
-        findRouteHelper(parents[trg], parents);
-        System.out.print(trg + " ");
+            return path;
+        findRouteSegmentHelper(parents[trg], parents, path);
+        return path;
     }
 
 
     public static void main(String [] args) throws IOException {
-        Trip trip = new Trip("Denver CO", "Bentonville AR");
-        trip.dijkstra();
-        System.out.println("Route: ");
-        for (String town : trip.path)
-        {
-            System.out.printf("-> " + town + " ");
-        }
+
+        List<String> attractions = new ArrayList<>();
+        attractions.add("Statue of Liberty");
+        attractions.add("Mystic Seaport");
+
+        Trip trip = new Trip();
+        List<String> route = trip.route("Denver CO", "Bentonville AR", attractions);
+        System.out.println("done ");
+//        for (String town : trip.path)
+//        {
+//            System.out.printf("-> " + town + " ");
+//        }
 
     }
 }
