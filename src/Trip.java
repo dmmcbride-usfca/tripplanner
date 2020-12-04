@@ -80,21 +80,7 @@ public class Trip {
         path.remove(0);
         return path;
 
-        int n = distances.length;
-        System.out.print("Vertex\t Distance\tPath");
-
-        for (int vIdx = 0;
-             vIdx < n;
-             vIdx++)
-        {
-            if (vIdx != src)
-            {
-                System.out.print("\n" + src + " -> ");
-                System.out.print(vIdx + " \t\t ");
-                System.out.print(distances[vIdx] + "\t\t");
-                printPath(vIdx, parents);
-            }
-        }
+        
     }
 
 
